@@ -1,0 +1,150 @@
+# -Implement-a-program-for-insertion-of-node-and-deletion-of-node-in-binary-search-tree.
+#include <iostream>
+using namespace std;
+
+// Node structure for Binary Search Tree
+struct Node {
+    int data;
+    Node* left;
+    Node* right;
+
+    // Constructor to create a new node
+    Node(int val) {
+        data = val;
+        left = nullptr;
+        right = nullptr;
+    }
+};
+
+// Class for Binary Search Tree
+class BinarySearchTree {
+private:
+    Node* root;
+
+    // Helper function for insertion
+    Node* insert(Node* node, int value) {
+        if (node == nullptr) {
+            return new Node(value);
+        }
+        if (value < node->data) {
+            node->left = insert(node->left, value);
+        } else if (value > node->data) {
+            node->right = insert(node->right, value);
+        }
+        return node;
+    }
+
+    // Helper function for finding the minimum value node
+    Node* findMin(Node* node) {
+        while (node && node->left != nullptr) {
+            node = node->left;
+        }
+        return node;
+    }
+
+    // Helper function for deletion of node
+    Node* deleteNode(Node* root, int value) {
+        if (root == nullptr) {
+            return root;
+        }
+        
+        // If the value to be deleted is smaller than the root's data
+        if (value < root->data) {
+            root->left = deleteNode(root->left, value);
+        }
+        // If the value to be deleted is greater than the root's data
+        else if (value > root->data) {
+            root->right = deleteNode(root->right, value);
+        }
+        // If the value is the same as root's data, then this is the node to be deleted
+        else {
+            // Node with only one child or no child
+            if (root->left == nullptr) {
+                Node* temp = root->right;
+                delete root;
+                return temp;
+            }
+            else if (root->right == nullptr) {
+                Node* temp = root->left;
+                delete root;
+                return temp;
+            }
+
+            // Node with two children: Get the inorder successor (smallest in the right subtree)
+            Node* temp = findMin(root->right);
+            root->data = temp->data;  // Copy the inorder successor's content to this node
+            root->right = deleteNode(root->right, temp->data);  // Delete the inorder successor
+        }
+        return root;
+    }
+
+    // Helper function for inorder traversal
+    void inorder(Node* node) {
+        if (node != nullptr) {
+            inorder(node->left);
+            cout << node->data << " ";
+            inorder(node->right);
+        }
+    }
+
+public:
+    // Constructor to initialize an empty tree
+    BinarySearchTree() {
+        root = nullptr;
+    }
+
+    // Public function for inserting a value
+    void insert(int value) {
+        root = insert(root, value);
+    }
+
+    // Public function for deleting a value
+    void deleteValue(int value) {
+        root = deleteNode(root, value);
+    }
+
+    // Public function for inorder traversal
+    void inorder() {
+        inorder(root);
+        cout << endl;
+    }
+};
+
+int main() {
+    BinarySearchTree bst;
+    int choice, value;
+
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Insert Node\n";
+        cout << "2. Delete Node\n";
+        cout << "3. Inorder Traversal\n";
+        cout << "4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                bst.insert(value);
+                break;
+            case 2:
+                cout << "Enter value to delete: ";
+                cin >> value;
+                bst.deleteValue(value);
+                break;
+            case 3:
+                cout << "Inorder Traversal: ";
+                bst.inorder();
+                break;
+            case 4:
+                cout << "Exiting program." << endl;
+                break;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    } while (choice != 4);
+
+    return 0;
+}
